@@ -496,6 +496,16 @@ class OpenStreetMap(DiscoveryProvider):
         "attorney": ['office=lawyer'],
         "contractor": ['craft=builder', 'office=construction_company'],
         "landscap": ['craft=gardener', 'shop=garden_centre'],
+        # Indian retail and wholesale shops (Dukan OS ICP).
+        "wholesale": ['shop=wholesale', 'shop=trade'],
+        "provision": ['shop=convenience', 'shop=general', 'shop=grocery'],
+        "kirana": ['shop=convenience', 'shop=general', 'shop=grocery'],
+        "grocery": ['shop=convenience', 'shop=supermarket', 'shop=grocery'],
+        "pharmacy": ['amenity=pharmacy', 'shop=chemist'],
+        "hardware": ['shop=hardware', 'shop=doityourself', 'shop=paint'],
+        "electronics": ['shop=electronics', 'shop=mobile_phone', 'shop=appliance'],
+        "sweets": ['shop=confectionery', 'shop=bakery', 'shop=pastry'],
+        "bakery": ['shop=bakery', 'shop=confectionery'],
     }
 
     def _tags(self, term: str) -> list[str]:
