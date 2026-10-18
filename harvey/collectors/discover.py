@@ -559,6 +559,21 @@ class OpenStreetMap(DiscoveryProvider):
             except httpx.HTTPError as e:
                 logger.warning("osm: %s unreachable (%s)", endpoint, e)
                 continue
+            if r.status_code == 500 and "way[" in body:
+                # Some mirrors answer 500 to any `way` clause. Shops are
+                # mostly nodes, so retry the same mirror with nodes only
+                # rather than lose the whole query.
+                node_clauses = "".join(
+                    f'node[{tag.split("=")[0]}={tag.split("=")[1]}]'
+                    f'(around:{radius_m},{lat},{lng});'
+                    for tag in tags
+                )
+                body = (f"[out:json][timeout:40];({node_clauses});"
+                        f"out center {query.limit};")
+                logger.warning("osm: %s rejected the way clauses — retrying "
+                               "with nodes only", endpoint)
+                r = await client.post(endpoint, content=body.encode(),
+                                      headers=headers)
             if r.status_code not in (429, 504):
                 break
             logger.warning("osm: %s is throttling (%s) — trying the next mirror",
